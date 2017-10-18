@@ -6,7 +6,7 @@ namespace App\Core\Session;
  *
  * @package App\Core\Session
  */
-class Session
+class Session implements SessionInterface
 {
     /**
      * @var string
