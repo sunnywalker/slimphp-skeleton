@@ -1,0 +1,59 @@
+{% extends 'admin/base.twig' %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+    {% if edit %}
+        <h2>Update</h2>
+        <form action="{{ path_for('admin-users') }}" method="post">
+            {% include 'admin/forms/user.twig' %}
+            <p>
+                <button name="submit" value="update" class="button success">Update</button>
+                <a href="{{ path_for('admin-users') }}" class="button">Cancel</a>
+                <button name="submit" value="delete" id="delete-button" class="button danger">Delete</button>
+            </p>
+        </form>
+    {% else %}
+        {% if all_rows %}
+            <h2>All Users</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Level</th>
+                        <th>Last Logged In</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in all_rows %}
+                        <tr>
+                            <td><a href="{{ path_for('admin-users') }}{{ row.id }}">{{ row.email }}</a></td>
+                            <td>{{ row.user_level }}</td>
+                            <td>{{ row.last_logged_in ?: 'never' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <h2>Create</h2>
+        <form action="{{ path_for('admin-users') }}" method="post">
+            {% include 'admin/forms/user.twig' %}
+            <p>
+                <button name="submit" value="create" class="button success">Create</button>
+            </p>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+<script>
+!(function () {
+    document.getElementById('delete-button').addEventListener('click', function (ev) {
+        if (!window.confirm('Are you sure?')) {
+            ev.preventDefault();
+        }
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+<p>
+    <label for="email">Email:</label>
+    <input type="email" name="email" id="email" value="{{ data.email }}">
+</p>
+<p>
+    <label for="user_level">User level:</label>
+    <select name="user_level" id="user_level">
+        <option value="100" {{ data.user_level == 100 ? 'selected' }}>Admin</option>
+        <option value="0" {{ data.user_level == 0 ? 'selected' }}>Cannot log in</option>
+    </select>
+</div>

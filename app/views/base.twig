@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %}{{ env('APP_NAME') }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ base_url() }}/css/app.css">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+<div class="page-wrapper">
+    <a href="#content" class="visuallyhidden">Skip to content</a>
+    {% include 'partials/_header.twig' %}
+    {% block nav %}{% include 'partials/_nav.twig' %}{% endblock %}
+    <main>
+        {% block sidebar %}{% include 'partials/_sidebar.twig' %}{% endblock %}
+        <section id="content">
+            {% block heading %}<h1>{{ block('title')}}</h1>{% endblock %}
+            {% if flash_messages %}
+                {% for type, message in flash_messages %}
+                    <div class="notice {{ type }}" role="alert">{{ message|join('<br>') }}</div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora harum libero excepturi et delectus modi amet consequuntur, nam nemo sit minus ab fuga quam unde asperiores incidunt! Culpa, omnis obcaecati!</p>
+            {% endblock %}
+        </section>
+    </main>
+    {% include 'partials/_footer.twig' %}
+</div>
+{% block javascripts %}{% endblock %}
+</body>
+</html>
