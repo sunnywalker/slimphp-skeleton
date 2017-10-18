@@ -10,7 +10,7 @@
         "slim/twig-view": "^2.2",
         "slim/flash": "^0.2.0",
         "illuminate/database": "^5.5",
-        "robmorgan/phinx": "^0.9.1",
+        "robmorgan/phinx": "^0.9.1"
     },
     "autoload": {
         "psr-4": {
