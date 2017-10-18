@@ -17,11 +17,7 @@
         {% block sidebar %}{% include 'partials/_sidebar.twig' %}{% endblock %}
         <section id="content">
             {% block heading %}<h1>{{ block('title')}}</h1>{% endblock %}
-            {% if flash_messages %}
-                {% for type, message in flash_messages %}
-                    <div class="notice {{ type }}" role="alert">{{ message|join('<br>') }}</div>
-                {% endfor %}
-            {% endif %}
+            {% include 'partials/_flash.twig' %}
             {% block content %}
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora harum libero excepturi et delectus modi amet consequuntur, nam nemo sit minus ab fuga quam unde asperiores incidunt! Culpa, omnis obcaecati!</p>
             {% endblock %}

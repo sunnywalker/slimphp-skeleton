@@ -1,0 +1,12 @@
+{# flash messages #}
+{% if flash_messages %}
+    {% for type, message in flash_messages %}
+        <div class="notice {{ type }}" role="alert">{{ message|join('<br>') }}</div>
+    {% endfor %}
+{% endif %}
+{# validation errors #}
+{% if validation_errors %}
+    {% for type, message in validation_errors %}
+        <div class="notice {{ type }}" role="alert">{{ message|join('<br>') }}</div>
+    {% endfor %}
+{% endif %}
