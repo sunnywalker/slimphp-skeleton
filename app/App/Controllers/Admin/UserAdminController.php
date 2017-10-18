@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\AbstractController;
@@ -8,18 +9,60 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class UserAdminController extends AbstractController
 {
-    private $path = 'admin-users';
-    private $view = 'admin/users.twig';
+    /**
+     * Named path for routing.
+     *
+     * @var string
+     */
+    protected $path = 'admin-users';
 
-    public function index($request, $response, $args)
+    /**
+     * View for rendering.
+     *
+     * @var string
+     */
+    protected $view = 'admin/users.twig';
+
+    /**
+     * Name of the field for sorting and reporting in flash messages.
+     *
+     * @var string
+     */
+    protected $name_field = 'email';
+
+    /**
+     * Form submit button name to check for flow control.
+     * Assumes values of 'create', 'update', 'delete'.
+     *
+     * @var string
+     */
+    protected $submit_name = 'submit';
+
+    /**
+     * Main manager page.
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     * @return mixed
+     */
+    public function index(Request $request, Response $response, $args)
     {
         return $this->c->view->render($response, $this->view, [
             'edit'     => null,
             'data'     => null,
-            'all_rows' => DataModel::orderBy('email')->get(),
+            'all_rows' => DataModel::orderBy($this->name_field)->get(),
         ]);
     }
 
+    /**
+     * Edit mode page.
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     * @return mixed
+     */
     public function edit(Request $request, Response $response, $args)
     {
         $edit = DataModel::find($args['id']);
@@ -28,59 +71,82 @@ class UserAdminController extends AbstractController
             return $response->withRedirect($this->c->router->pathFor($this->path));
         }
         return $this->c->view->render($response, $this->view, [
-            'messages' => $this->c->flash->getMessages(),
             'edit'     => $edit,
             'data'     => $edit->toArray(),
             'all_rows' => [],
         ]);
     }
 
+    /**
+     * Create handler.
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     * @return mixed
+     */
     public function create(Request $request, Response $response, $args)
     {
-        $data = array_map('trim', $request->getParsedBody());
-        if ($errors = $this->validate($data)) {
-            // go back to create page, preserving submitted form data
-            return $this->c->view->render($response, $this->view, [
-                'messages' => $errors,
-                'edit'     => null,
-                'data'     => $data,
-                'all_rows' => DataModel::get(),
-            ]);
-        } else {
-            $row = new DataModel;
-            $row->email = $data['email'];
-            $row->full_name = $data['full_name'];
-            $row->save();
-            $this->c->flash->addMessage('success', 'Ua hoʻokomo ʻia ʻo “'.htmlspecialchars($data['full_name']).'”.');
+        if ($request->getParam($this->submit_name) === 'create') {
+            $data = array_map('trim', $request->getParsedBody());
+            $edit = new DataModel;
+            if ($errors = $edit->validationErrors($data)) {
+                // show the create page, preserving submitted form data
+                return $this->c->view->render($response, $this->view, [
+                    'validation_errors' => $errors,
+                    'edit'              => $edit,
+                    'data'              => $data,
+                    'all_rows'          => [],
+                ]);
+            } else {
+                $this->assignValues($edit, $data);
+                $edit->save();
+                $this->c->flash->addMessage('success', 'Created “'.htmlspecialchars($data[$this->name_field]).'”.');
+            }
         }
         return $response->withRedirect($this->c->router->pathFor($this->path));
     }
 
+    /**
+     * Update/delete handler.
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param array    $args
+     * @return mixed
+     */
     public function submit(Request $request, Response $response, $args)
     {
         $edit = DataModel::find($args['id']);
         if (!$edit) {
-            $this->c->flash->addMessage('danger', 'ʻAʻohe mea i hiki ke hoʻololi.');
+            $this->c->flash->addMessage('danger', 'Nothing to update.');
             return $response->withRedirect($this->c->router->pathFor($this->path));
         }
         $data = array_map('trim', $request->getParsedBody());
-        if ($data['submit'] === 'delete') {
-            $this->c->flash->addMessage('success', 'Ua kīloi ʻia ʻo “'.htmlspecialchars($edit->full_name).'”.');
+        if ($data[$this->submit_name] === 'delete') {
+            $this->c->flash->addMessage('success', 'Deleted “'.htmlspecialchars($edit->email).'”.');
             $edit->delete();
-        } elseif ($errors = $this->validate($data)) {
-            // go back to edit page, preserving submitted form data
-            return $this->c->view->render($response, $this->view, [
-                'messages' => $errors,
-                'edit' => $edit,
-                'data' => $data,
-                'all_rows' => [],
-            ]);
-        } else {
-            $edit->email = $data['email'];
-            $edit->full_name = $data['full_name'];
-            $edit->save();
-            $this->c->flash->addMessage('success', 'Ua mālama ʻia ʻo “'.htmlspecialchars($data['full_name']).'”.');
+        } elseif ($data[$this->submit_name] === 'update') {
+            if ($errors = $this->validationErrors($data)) {
+                // show the edit page, preserving submitted form data
+                return $this->c->view->render($response, $this->view, [
+                    'validation_errors' => $errors,
+                    'edit'              => $edit,
+                    'data'              => $data,
+                    'all_rows'          => [],
+                ]);
+            } else {
+                $this->assignValues($edit, $data);
+                $edit->save();
+                $this->c->flash->addMessage('success', 'Updated “'.htmlspecialchars($data[$this->name_field]).'”.');
+            }
         }
         return $response->withRedirect($this->c->router->pathFor($this->path));
+    }
+
+    protected function assignValues(&$object, &$data)
+    {
+        $object->email      = $data['email'];
+        $object->user_level = (int)$data['user_level'];
     }
 }
