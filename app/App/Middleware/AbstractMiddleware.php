@@ -11,7 +11,7 @@ abstract class AbstractMiddleware
     protected $c;
 
     /**
-     * Middleware contructor.
+     * Middleware constructor.
      *
      * @param ContainerInterface $container
      */

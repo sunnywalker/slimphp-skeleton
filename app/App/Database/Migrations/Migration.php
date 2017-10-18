@@ -9,7 +9,7 @@ class Migration extends AbstractMigration
     protected $schema;
 
     /**
-     * Initilize the migration to use Eloquent.
+     * Initialize the migration to use Eloquent.
      */
     public function init()
     {
