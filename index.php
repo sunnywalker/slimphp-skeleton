@@ -6,6 +6,7 @@ require_once 'app/bootstrap/app.php';
 require_once 'app/bootstrap/flash.php';
 require_once 'app/bootstrap/twig.php';
 require_once 'app/bootstrap/eloquent.php';
+require_once 'app/bootstrap/session.php';
 require_once 'app/bootstrap/authn.php';
 
 // global middleware
