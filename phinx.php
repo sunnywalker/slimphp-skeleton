@@ -11,7 +11,7 @@ return [
     ],
     'migration_base_class' => 'App\Database\Migrations\Migration',
     'templates' => [
-        'file' => 'app/Database/Migrations/MigrationStub.php',
+        'file' => 'app/App/Database/Migrations/MigrationStub.php',
     ],
     'environments' => [
         'default_migration_table' => 'migrations',
