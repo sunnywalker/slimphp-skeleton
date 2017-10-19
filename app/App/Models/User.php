@@ -4,6 +4,13 @@ namespace App\Models;
 class User extends AbstractModel
 {
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = ['password'];
+
+    /**
      * Set the password.
      *
      * @param string $password
