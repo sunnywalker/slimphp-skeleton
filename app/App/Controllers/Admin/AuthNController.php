@@ -22,7 +22,7 @@ class AuthNController extends AbstractController
      */
     public function logIn(Request $request, Response $response, $args)
     {
-        if ($this->c->authn->logInAttempt($request->getParam('email'), $request->getParam('password'))) {
+        if ($this->c->authn->attemptLogIn($request->getParam('email'), $request->getParam('password'))) {
             $this->c->flash->addMessage('success', 'Logged in.');
             return $response->withRedirect($this->c->router->pathFor('home'));
         }
